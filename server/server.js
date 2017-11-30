@@ -19,14 +19,25 @@ app.use(express.static(publicPath)); //configure middleware via express
 io.on('connection', (socket) => {   //is.on() lets you register an event listener. we can listen for a specific event and do something when that event happens
     console.log('New user connected');
 
-    socket.on('createMessage', (message) => {
-        console.log('Create message', message);
-        io.emit('newMessage', { //io.emit() emits an event to every single connection, socket.io() emits an event to a single connection
-            from: message.from,
-            text: message.text,
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app'
+    });
+
+        socket.broadcast.emit('newMessage', { //the differance between io.emit and socket.emit in comparison to broadcast.emit is who it gets sent to. broadcast.emit will send the message to everyone but this socket
+            from: 'Admin',
+            text: 'New user joined',
             createdAt: new Date().getTime()
-        })
-    })
+        });
+
+        socket.on('createMessage', (message) => {
+            console.log('Create message', message);
+            io.emit('newMessage', { //io.emit() emits an event to every single connection, socket.io() emits an event to a single connection
+                from: message.from,
+                text: message.text,
+                createdAt: new Date().getTime()
+            })
+        });
     
     socket.on('disconnect', () => {
         console.log('Disconnected from server');
