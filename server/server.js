@@ -19,18 +19,13 @@ app.use(express.static(publicPath)); //configure middleware via express
 io.on('connection', (socket) => {   //is.on() lets you register an event listener. we can listen for a specific event and do something when that event happens
     console.log('New user connected');
 
-    socket.emit('newMessage', {   //1st argument: name of event you want to emit. 2nd argument is the data
-        from: 'The big dude',
-        text: "Some text from big dude",
-        createdAt: 123
-    });
-
-    socket.on('createEmail', (newEmail) => {
-        console.log('createEmail', newEmail);
-    });
-
     socket.on('createMessage', (message) => {
         console.log('Create message', message);
+        io.emit('newMessage', { //io.emit() emits an event to every single connection, socket.io() emits an event to a single connection
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        })
     })
     
     socket.on('disconnect', () => {
