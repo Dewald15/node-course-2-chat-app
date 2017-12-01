@@ -36,11 +36,13 @@ socket.emit('createMessage', {
 jQuery('#message-form').on('submit', function(e){ // .on() specifies event listener
     e.preventDefault();
 
+    var messageTextbox = jQuery('[name=message]');
+
     socket.emit('createMessage', {
         from: 'User',
-        text: jQuery('[name=message]').val()
+        text: messageTextbox.val()
     }, function(){
-
+        messageTextbox.val('')
     });
 });
 
@@ -51,12 +53,16 @@ locationButton.on('click', function () {
         return alert('Geolocation not supported by your browser.');
     };
 
+    locationButton.attr('disabled', 'disabled').text('Sending location..');
+
     navigator.geolocation.getCurrentPosition( function (position) { //getCurrentPostion is a function that starts the process, it's going to actively get the coordinates for the user..in this case, it will get the coordinates based of the browser
+    locationButton.removeAttr('disabled').text('Send Location');
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
         });
     }, function () {
+        locationButton.removeAttr('disabled');
         alert('Unable to fetch location');
     });
 });

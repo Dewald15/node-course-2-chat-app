@@ -27,7 +27,7 @@ io.on('connection', (socket) => {   //io.on() lets you register an event listene
     socket.on('createMessage', (message, callback) => {
         console.log('Create message', message);
         io.emit('newMessage', generateMessage(message.from, message.text)); //io.emit() emits an event to every single connection, socket.emit() emits an event to a single connection
-        callback('This is from the server'); //Ecent acknowledgement letting client know message was recieved by the server
+        callback(); //Event acknowledgement letting client know message was recieved by the server
     });
 
     socket.on('createLocationMessage', (coords) => {
