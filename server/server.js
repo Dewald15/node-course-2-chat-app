@@ -24,9 +24,10 @@ io.on('connection', (socket) => {   //io.on() lets you register an event listene
 
     socket.broadcast.emit('newMessage', generateMessage("Admin", "New user joined"));  //the differance between io.emit and socket.emit in comparison to broadcast.emit is who it gets sent to. broadcast.emit will send the message to everyone but this socket
        
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('Create message', message);
         io.emit('newMessage', generateMessage(message.from, message.text)); //io.emit() emits an event to every single connection, socket.emit() emits an event to a single connection
+        callback('This is from the server'); //Ecent acknowledgement letting client know message was recieved by the server
     });
     
     socket.on('disconnect', () => {
