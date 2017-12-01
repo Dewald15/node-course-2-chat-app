@@ -9,18 +9,19 @@ socket.on('disconnect', function(){ //built in event
 });
 
 socket.on('newMessage', function(message){  //custom event
-    console.log('New message:', message);
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li>');
-    li.text(`${message.from}: ${message.text}`);
+    li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
     jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function(message){
+    var formattedTime = moment(message.createdAt).format('h:mm a');
     var li = jQuery('<li></li>');
     var a = jQuery('<a target="_blank">My current location<a/>'); // target="_blank" tells the browser to open up the url in a new tab as opposed to redirecting the current tab
 
-    li.text(`${message.from}: `);
+    li.text(`${message.from} ${formattedTime}: `);
     a.attr('href', message.url); //you can set and fetch attributes on your jQuery selected elements using this method. If you provide one argument like target, it fetches the value. If you specify two arguments, it sets the value  
     li.append(a);
     jQuery('#messages').append(li);
