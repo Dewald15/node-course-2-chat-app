@@ -10,28 +10,28 @@ socket.on('disconnect', function(){ //built in event
 
 socket.on('newMessage', function(message){  //custom event
     var formattedTime = moment(message.createdAt).format('h:mm a');
-    var li = jQuery('<li></li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
+    var template = jQuery('#message-template').html(); //html() will return the markup inside of #message-template
+    var html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    });
 
-    jQuery('#messages').append(li);
+    jQuery('#messages').append(html);
 });
 
 socket.on('newLocationMessage', function(message){
     var formattedTime = moment(message.createdAt).format('h:mm a');
-    var li = jQuery('<li></li>');
-    var a = jQuery('<a target="_blank">My current location<a/>'); // target="_blank" tells the browser to open up the url in a new tab as opposed to redirecting the current tab
+    var template = jQuery('#location-message-template').html();
+    var html = Mustache.render(template, {
+        from: message.from,
+        createdAt: formattedTime,
+        url: message.url
+    });
 
-    li.text(`${message.from} ${formattedTime}: `);
-    a.attr('href', message.url); //you can set and fetch attributes on your jQuery selected elements using this method. If you provide one argument like target, it fetches the value. If you specify two arguments, it sets the value  
-    li.append(a);
-    jQuery('#messages').append(li);
-});
-
-socket.emit('createMessage', {
-    from: 'DeeDude',
-    text: 'Text from DeeDude'
-}, function(data) { //callback function called by server if received 
-    console.log("Got it!", data);
+    jQuery('#messages').append(html);
+    
+    // a.attr('href', message.url); //you can set and fetch attributes on your jQuery selected elements using this method. If you provide one argument like target, it fetches the value. If you specify two arguments, it sets the value  
 });
 
 jQuery('#message-form').on('submit', function(e){ // .on() specifies event listener
