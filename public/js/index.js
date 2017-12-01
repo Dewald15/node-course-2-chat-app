@@ -1,5 +1,21 @@
 var socket = io();
 
+function scrollToBottom (){
+    // Selectors
+    var messages = jQuery('#messages');
+    var newMessage = messages.children('li:last-child')
+    //Heights
+    var clientHeight = messages.prop('clientHeight');
+    var scrollTop = messages.prop('scrollTop');
+    var scrollHeight = messages.prop('scrollHeight');
+    var newMessageHeight = newMessage.innerHeight();
+    var lastMessageHeight = newMessage.prev().innerHeight();
+
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }
+}
+
 socket.on('connect', function(){ //built in event
     console.log("Connected to server");
 });
@@ -18,6 +34,7 @@ socket.on('newMessage', function(message){  //custom event
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
 });
 
 socket.on('newLocationMessage', function(message){
@@ -30,6 +47,7 @@ socket.on('newLocationMessage', function(message){
     });
 
     jQuery('#messages').append(html);
+    scrollToBottom();
     
     // a.attr('href', message.url); //you can set and fetch attributes on your jQuery selected elements using this method. If you provide one argument like target, it fetches the value. If you specify two arguments, it sets the value  
 });
