@@ -3,15 +3,14 @@ var socket = io();
 function scrollToBottom (){
     // Selectors
     var messages = jQuery('#messages');
-    var newMessage = messages.children('li:last-child')
+    var newMessage = messages.children('li:last-child');
     //Heights
-    var clientHeight = messages.prop('clientHeight');
+    var clientHeight = messages.prop('clientHeight'); // 'prop' is a cross-browser way to fetch a property. This is a jQuery alternative to doing it. Without jQuery, we make sure it works across all browsers regardless of what they call the prop
     var scrollTop = messages.prop('scrollTop');
     var scrollHeight = messages.prop('scrollHeight');
-    var newMessageHeight = newMessage.innerHeight();
-    var lastMessageHeight = newMessage.prev().innerHeight();
-
-    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+    var newMessageHeight = newMessage.innerHeight(); //this will calculate the inner height of the message taking into account the padding that we also applied via css
+    var lastMessageHeight = newMessage.prev().innerHeight(); // second last item from 'li:last-child'
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){ // left side of comparison can be > than 'scrollHeight' becuase 'newMessageHeight' and 'lastMessageHeight' is not taken into consideration from messages.prop('scrollHeight'); at this stage probably due to either the 'newMessage' socket.on method where this method 'scrollToBottom()' is called, is asynchronous, or/and the 'Mustache.render' method's asynchronousation also inside 'newMessage'
         messages.scrollTop(scrollHeight);
     }
 }
@@ -27,12 +26,12 @@ socket.on('disconnect', function(){ //built in event
 socket.on('newMessage', function(message){  //custom event
     var formattedTime = moment(message.createdAt).format('h:mm a');
     var template = jQuery('#message-template').html(); //html() will return the markup inside of #message-template
+    var messages = jQuery('#messages');
     var html = Mustache.render(template, {
         text: message.text,
         from: message.from,
         createdAt: formattedTime
     });
-
     jQuery('#messages').append(html);
     scrollToBottom();
 });
